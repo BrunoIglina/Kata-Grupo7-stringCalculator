@@ -29,4 +29,10 @@ describe('Sumar', () => {
   test('Sumar_StringVacio_RetornaCero', () => {
     expect(Sumar('')).toBe(0);
   })
+
+  test('Sumar_UnNumero_RetornaElNumero', () => {
+    expect(Sumar('1')).toBe(1);
+  })
+
+
 })
