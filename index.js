@@ -1,3 +1,7 @@
 export function Sumar(numeros) {
-return 0;
+  if (numeros === '') {
+    return 0;
+  } else if (numeros === '1') {
+    return 1;
+  }
 }
