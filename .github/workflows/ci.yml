@@ -1,6 +1,5 @@
 name: Integración Continua - Grupo 7 - Chiesa_Goya_Iglina_Montini
 
-# El pipeline se ejecutará automáticamente con cada push o pull request a la rama main
 on:
   push:
     branches: [ main ]
@@ -12,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Descarga el código del repositorio en el servidor de GitHub
+    # 1. Descarga el código del repositorio
     - name: Checkout del código
       uses: actions/checkout@v4
 
@@ -21,22 +20,19 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 22
+        cache: 'npm' # Esta opción optimiza y acelera las futuras ejecuciones guardando la caché
 
-    # 3. PASO 3 CI: Instalar dependencias usando pnpm
-    # Nota: Como en su archivo package.json usan npm/pnpm, primero instalamos el gestor de paquetes
-    - name: Instalar pnpm
-      uses: pnpm/action-setup@v3
-      with:
-        version: latest
-
+    # 3. PASO 3 CI: Instalar dependencias usando npm ci (Clean Install)
+    # Nota: 'npm ci' es el comando ideal para servidores de CI porque instala estrictamente 
+    # lo que dice el package-lock.json de forma limpia y exacta.
     - name: Instalar dependencias (Verificación de Integridad)
-      run: pnpm install
+      run: npm ci
 
     # 4. PASO 4 y 5 CI: Ejecutar Unit Tests con reporte de cobertura de código
     - name: Ejecutar Unit Tests y Cobertura
-      run: pnpm test -- --coverage
+      run: npm test -- --coverage
 
-    # 5. Guardar los resultados de Code Coverage como un artefacto descargable en GitHub
+    # 5. Guardar los resultados de Code Coverage como un artefacto descargable
     - name: Subir reporte de Cobertura
       uses: actions/upload-artifact@v4
       with:
