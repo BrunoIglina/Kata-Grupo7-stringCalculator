@@ -1,0 +1,44 @@
+name: Integración Continua - Grupo 7 - Chiesa_Goya_Iglina_Montini
+
+# El pipeline se ejecutará automáticamente con cada push o pull request a la rama main
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Descarga el código del repositorio en el servidor de GitHub
+    - name: Checkout del código
+      uses: actions/checkout@v4
+
+    # 2. Configura el entorno con Node.js versión 22
+    - name: Configurar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+
+    # 3. PASO 3 CI: Instalar dependencias usando pnpm
+    # Nota: Como en su archivo package.json usan npm/pnpm, primero instalamos el gestor de paquetes
+    - name: Instalar pnpm
+      uses: pnpm/action-setup@v3
+      with:
+        version: latest
+
+    - name: Instalar dependencias (Verificación de Integridad)
+      run: pnpm install
+
+    # 4. PASO 4 y 5 CI: Ejecutar Unit Tests con reporte de cobertura de código
+    - name: Ejecutar Unit Tests y Cobertura
+      run: pnpm test -- --coverage
+
+    # 5. Guardar los resultados de Code Coverage como un artefacto descargable en GitHub
+    - name: Subir reporte de Cobertura
+      uses: actions/upload-artifact@v4
+      with:
+        name: reporte-cobertura
+        path: coverage/
