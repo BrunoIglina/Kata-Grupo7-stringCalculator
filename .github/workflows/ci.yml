@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Descarga el código del repositorio (con historial completo para SonarCloud)
+    # 1. Descarga el código del repositorio con historial completo para SonarCloud
     - name: Checkout del código
       uses: actions/checkout@v4
       with:
@@ -38,15 +38,23 @@ jobs:
     - name: Ejecutar Unit Tests y Cobertura
       run: npm test
 
-    # 5. PASO 6 CI: Ejecuta Análisis Estático de Código con SonarCloud
+    # 5. PASO 6 CI: Ejecuta Análisis Estático de Código con SonarCloud (Acción oficial v5)
     - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@master
+      uses: SonarSource/sonarqube-scan-action@v5
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          -Dsonar.projectKey=BrunoIglina_Kata-Grupo7-stringCalculator
+          -Dsonar.organization=brunoiglina
+          -Dsonar.sources=.
+          -Dsonar.tests=.
+          -Dsonar.test.inclusions=**/*.test.js
+          -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
 
     # 6. Publica automáticamente la carpeta HTML en GitHub Pages
     - name: Desplegar Reporte HTML a GitHub Pages
-      if: github.ref == 'refs/heads/main' # Solo se publica al impactar la rama main
+      if: github.ref == 'refs/heads/main'
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
