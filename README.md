@@ -37,3 +37,9 @@ En modo watch durante desarrollo:
 ```bash
 pnpm test -- --watch
 ```
+
+## 📊 Estado de la Integración Continua
+
+* **Pipeline de CI:** El proyecto compila y ejecuta las pruebas automáticamente en cada cambio usando **GitHub Actions**.
+* **Reporte HTML interactivo:** Ver en vivo el detalle de las pruebas y la cobertura aquí:  
+    👉 **[Dashboard de Cobertura de Código (Jest HTML Report)](https://brunoiglina.github.io/Kata-Grupo7-stringCalculator/)**
