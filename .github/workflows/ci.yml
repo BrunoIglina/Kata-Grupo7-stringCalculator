@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ main ]
 
+# Permisos necesarios para que la Action cree la web en GitHub Pages
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -15,26 +21,25 @@ jobs:
     - name: Checkout del código
       uses: actions/checkout@v4
 
-    # 2. Configura el entorno con Node.js versión 22
+    # 2. Configura Node.js versión 22
     - name: Configurar Node.js
       uses: actions/setup-node@v4
       with:
         node-version: 22
-        cache: 'npm' # Esta opción optimiza y acelera las futuras ejecuciones guardando la caché
+        cache: 'npm'
 
-    # 3. PASO 3 CI: Instalar dependencias usando npm ci (Clean Install)
-    # Nota: 'npm ci' es el comando ideal para servidores de CI porque instala estrictamente 
-    # lo que dice el package-lock.json de forma limpia y exacta.
-    - name: Instalar dependencias (Verificación de Integridad)
+    # 3. PASO 3 CI: Instalar dependencias de forma limpia (Garantiza compilación/integridad)
+    - name: Instalar dependencias
       run: npm ci
 
-    # 4. PASO 4 y 5 CI: Ejecutar Unit Tests con reporte de cobertura de código
+    # 4. PASO 4 y 5 CI: Ejecuta los Unit Tests y genera la carpeta coverage/lcov-report/
     - name: Ejecutar Unit Tests y Cobertura
-      run: npm test -- --coverage
+      run: npm test
 
-    # 5. Guardar los resultados de Code Coverage como un artefacto descargable
-    - name: Subir reporte de Cobertura
-      uses: actions/upload-artifact@v4
+    # 5. NUEVO PASO: Publica automáticamente la carpeta HTML en GitHub Pages
+    - name: Desplegar Reporte HTML a GitHub Pages
+      if: github.ref == 'refs/heads/main' # Solo se publica al impactar la rama main
+      uses: peaceiris/actions-gh-pages@v4
       with:
-        name: reporte-cobertura
-        path: coverage/
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./coverage/lcov-report
