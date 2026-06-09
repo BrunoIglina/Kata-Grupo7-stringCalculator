@@ -4,9 +4,9 @@ export function Sumar(numeros) {
   }
   if (numeros.includes(',')) {
     const partes = numeros.split(',');
-    return partes.reduce((suma, parte) => suma + parseInt(parte, 10), 0);
+    return partes.reduce((suma, parte) => suma + Number.parseInt(parte, 10), 0);
   }
 
-  return parseInt(numeros, 10);
+  return Number.parseInt(numeros, 10);
 }
 

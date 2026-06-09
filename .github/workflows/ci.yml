@@ -17,9 +17,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Descarga el código del repositorio
+    # 1. Descarga el código del repositorio (con historial completo para SonarCloud)
     - name: Checkout del código
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     # 2. Configura Node.js versión 22
     - name: Configurar Node.js
@@ -28,15 +30,21 @@ jobs:
         node-version: 22
         cache: 'npm'
 
-    # 3. PASO 3 CI: Instalar dependencias de forma limpia (Garantiza compilación/integridad)
+    # 3. PASO 3 CI: Instalar dependencias de forma limpia
     - name: Instalar dependencias
       run: npm ci
 
-    # 4. PASO 4 y 5 CI: Ejecuta los Unit Tests y genera la carpeta coverage/lcov-report/
+    # 4. PASO 4 y 5 CI: Ejecuta los Unit Tests y genera la carpeta coverage/
     - name: Ejecutar Unit Tests y Cobertura
       run: npm test
 
-    # 5. NUEVO PASO: Publica automáticamente la carpeta HTML en GitHub Pages
+    # 5. PASO 6 CI: Ejecuta Análisis Estático de Código con SonarCloud
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    # 6. Publica automáticamente la carpeta HTML en GitHub Pages
     - name: Desplegar Reporte HTML a GitHub Pages
       if: github.ref == 'refs/heads/main' # Solo se publica al impactar la rama main
       uses: peaceiris/actions-gh-pages@v4
