@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Descarga el código del repositorio con historial completo para SonarCloud
+    # 1. Descarga el código del repositorio (Historial completo obligatorio para SonarCloud)
     - name: Checkout del código
       uses: actions/checkout@v4
       with:
@@ -30,29 +30,21 @@ jobs:
         node-version: 22
         cache: 'npm'
 
-    # 3. PASO 3 CI: Instalar dependencias de forma limpia
+    # 3. PASO 3 CI: Instalar dependencias de forma limpia empleando el archivo package-lock.json
     - name: Instalar dependencias
       run: npm ci
 
-    # 4. PASO 4 y 5 CI: Ejecuta los Unit Tests y genera la carpeta coverage/
+    # 4. PASO 4 y 5 CI: Ejecuta los Unit Tests y genera el reporte LCOV interno de Cobertura
     - name: Ejecutar Unit Tests y Cobertura
       run: npm test
 
-    # 5. PASO 6 CI: Ejecuta Análisis Estático de Código con SonarCloud (Acción oficial v5)
+    # 5. PASO 6 CI: Ejecuta Análisis Estático utilizando la última versión oficial (v8)
     - name: SonarCloud Scan
-      uses: SonarSource/sonarqube-scan-action@v5
+      uses: SonarSource/sonarqube-scan-action@v8
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      with:
-        args: >
-          -Dsonar.projectKey=BrunoIglina_Kata-Grupo7-stringCalculator
-          -Dsonar.organization=brunoiglina
-          -Dsonar.sources=.
-          -Dsonar.tests=.
-          -Dsonar.test.inclusions=**/*.test.js
-          -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
 
-    # 6. Publica automáticamente la carpeta HTML en GitHub Pages
+    # 6. Publica automáticamente la carpeta HTML en GitHub Pages (Solo se ejecuta al impactar main)
     - name: Desplegar Reporte HTML a GitHub Pages
       if: github.ref == 'refs/heads/main'
       uses: peaceiris/actions-gh-pages@v4
